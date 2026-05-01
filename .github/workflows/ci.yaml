@@ -18,8 +18,7 @@ jobs:
       run: cmake --build build-debug
 
     - name: Run tests (Debug)
-      run: ctest --test-dir build-debug --output-on-failure
-
+      run: build-debug/tests/TreeOptimizer_Tests
     - name: Configure Release
       run: cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release -G Ninja
 
