@@ -5,33 +5,35 @@ on: [push, pull_request]
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y ninja-build
 
-    - name: Configure CMake (Debug)
-      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja
+    - name: Configure Debug
+      run: cmake -S . -B build-debug -DCMAKE_BUILD_TYPE=Debug -G Ninja
 
-    - name: Build
-      run: cmake --build build
+    - name: Build Debug
+      run: cmake --build build-debug
 
-    - name: Run tests
-      run: ctest --test-dir build --output-on-failure
+    - name: Run tests (Debug)
+      run: build-debug/tests/TreeOptimizer_Tests
 
-    - name: Configure CMake (Release)
+    - name: Configure Release
       run: cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release -G Ninja
 
     - name: Build Release
       run: cmake --build build-release
 
-    - name: Run benchmarks (smoke)
+    - name: Run benchmarks (Release)
       run: build-release/benchmark/TreeOptimizer_Bench --benchmark_min_time=0.01
 
-    - name: Run sanitizers (ASan, UBSan)
-      run: |
-        cmake -S . -B build-san -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -g" -G Ninja
-        cmake --build build-san
-        ctest --test-dir build-san --output-on-failure
+    - name: Configure Sanitizers
+      run: cmake -S . -B build-san -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -g" -G Ninja
+
+    - name: Build Sanitizers
+      run: cmake --build build-san
+
+    - name: Run tests with sanitizers
+      run: build-san/tests/TreeOptimizer_Tests
