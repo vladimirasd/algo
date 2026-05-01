@@ -1,0 +1,5 @@
+if(EXISTS "C:/Users/Andrey/source/repos/tree_optimaze/build/tests/TreeOptimizer_Tests[1]_tests.cmake")
+  include("C:/Users/Andrey/source/repos/tree_optimaze/build/tests/TreeOptimizer_Tests[1]_tests.cmake")
+else()
+  add_test(TreeOptimizer_Tests_NOT_BUILT TreeOptimizer_Tests_NOT_BUILT)
+endif()

@@ -1,0 +1,37 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+    - name: Configure CMake (Debug)
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja
+
+    - name: Build
+      run: cmake --build build
+
+    - name: Run tests
+      run: ctest --test-dir build --output-on-failure
+
+    - name: Configure CMake (Release)
+      run: cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release -G Ninja
+
+    - name: Build Release
+      run: cmake --build build-release
+
+    - name: Run benchmarks (smoke)
+      run: build-release/benchmark/TreeOptimizer_Bench --benchmark_min_time=0.01
+
+    - name: Run sanitizers (ASan, UBSan)
+      run: |
+        cmake -S . -B build-san -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -g" -G Ninja
+        cmake --build build-san
+        ctest --test-dir build-san --output-on-failure
