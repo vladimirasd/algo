@@ -19,6 +19,7 @@ jobs:
 
     - name: Run tests (Debug)
       run: build-debug/tests/TreeOptimizer_Tests
+
     - name: Configure Release
       run: cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release -G Ninja
 
@@ -35,4 +36,4 @@ jobs:
       run: cmake --build build-san
 
     - name: Run tests with sanitizers
-      run: ctest --test-dir build-san --output-on-failure
+      run: build-san/tests/TreeOptimizer_Tests
